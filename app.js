@@ -10,6 +10,7 @@ const passport = require("passport")
 
 const User = require('./models/User')
 const GoogleStrategy = require('./models/GoogleStrategy')
+const FacebookStrategy = require('./models/FacebookStrategy')
 const app = express();
 
 app.use(express.static("public"))
@@ -43,6 +44,7 @@ passport.deserializeUser(function (id, done) {
 })
 
 passport.use(GoogleStrategy)
+passport.use(FacebookStrategy)
 
 app.get("/", function (req, res) {
   res.render("home");
@@ -50,15 +52,27 @@ app.get("/", function (req, res) {
 
 /*************************** Google Authentication ***************************/
 app.get("/auth/google",
-  passport.authenticate('google', { scope: ["profile"] })
+  passport.authenticate('google', { scope: ["profile", "email"] })
 )
 
 app.get("/auth/google/secrets",
   passport.authenticate('google', { failureRedirect: "/login" }),
   function (req, res) {
-    // Successful authentication, redirect to secrets.
+    // Successful authentication, redirect to secrets page.
     res.redirect("/secrets")
   })
+
+/*************************** Facebook Authentication ***************************/
+
+app.get('/auth/facebook',
+  passport.authenticate('facebook'))
+
+app.get('/auth/facebook/secrets',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect secrets page.
+    res.redirect('/secrets');
+  });
 
 /*************************** Local Authentication ***************************/
 app.post("/login", function (req, res) {
