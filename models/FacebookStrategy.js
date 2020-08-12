@@ -1,3 +1,5 @@
+// Facebook Strategy
+
 const FacebookStrategy = require('passport-facebook').Strategy
 const User = require('./User')
 
